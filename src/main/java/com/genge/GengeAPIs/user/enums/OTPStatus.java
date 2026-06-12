@@ -4,5 +4,6 @@ public enum OTPStatus {
     ACTIVE,
     INACTIVE,
     EXPIRED,
-    PENDING
+    PENDING,
+    VERIFIED
 }

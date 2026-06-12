@@ -1,6 +1,8 @@
 package com.genge.GengeAPIs.user.controller;
 
+import com.genge.GengeAPIs.response.APIResponse;
 import com.genge.GengeAPIs.response.AuthResponse;
+import com.genge.GengeAPIs.user.dto.OtpVerificationRequest;
 import com.genge.GengeAPIs.user.dto.SignInRequest;
 import com.genge.GengeAPIs.user.service.AuthService;
 import jakarta.validation.Valid;
@@ -51,5 +53,11 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(response);
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<APIResponse> verifyOtp(@Valid @RequestBody OtpVerificationRequest request){
+        APIResponse response = authService.verifyOtp(request);
+        return ResponseEntity.ok(response);
     }
 }

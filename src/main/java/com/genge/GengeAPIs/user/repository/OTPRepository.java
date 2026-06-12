@@ -2,6 +2,7 @@ package com.genge.GengeAPIs.user.repository;
 
 import com.genge.GengeAPIs.user.entity.OTP;
 import com.genge.GengeAPIs.user.entity.User;
+import com.genge.GengeAPIs.user.enums.OTPStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,4 +17,9 @@ public interface OTPRepository extends JpaRepository<OTP,Long> {
     Optional<OTP> findByPhone(String phone);
     Optional<OTP> findByPhoneAndOtp(String phone, String otp);
     Optional<OTP> findByOtp(String otp);
+    Optional<OTP> findFirstByPhoneAndOtpAndStatusOrderByIdDesc(
+            String phone,
+            String otp,
+            OTPStatus status
+    );
 }

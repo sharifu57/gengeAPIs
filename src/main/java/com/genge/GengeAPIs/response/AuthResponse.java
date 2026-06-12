@@ -13,14 +13,16 @@ import lombok.Setter;
 public class AuthResponse<T> {
     private boolean status;
     private String message;
+    private String phone;
     private String token;
     private String refreshToken;
     private String expired;
     private T data;
 
-    public AuthResponse(boolean status, String message, T data) {
+    public AuthResponse(boolean status, String message, String phone, T data) {
         this.status = status;
         this.message = message;
+        this.phone = phone;
         this.token = null;
         this.refreshToken = null;
         this.data = data;

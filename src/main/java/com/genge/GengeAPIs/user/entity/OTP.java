@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -28,4 +29,7 @@ public class OTP extends Auditable<String> implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id" ,referencedColumnName = "id")
     private User user;
+
+    private Date expiresAt;
+    private Date verifiedAt;
 }

@@ -3,8 +3,11 @@ package com.genge.GengeAPIs.user.service;
 import com.genge.GengeAPIs.common.service.JwtService;
 import com.genge.GengeAPIs.common.service.SmsService;
 import com.genge.GengeAPIs.config.SystemEnv;
+import com.genge.GengeAPIs.response.APIResponse;
 import com.genge.GengeAPIs.response.AuthResponse;
+import com.genge.GengeAPIs.user.dto.OtpVerificationRequest;
 import com.genge.GengeAPIs.user.dto.SignInRequest;
+import com.genge.GengeAPIs.user.dto.UserResponse;
 import com.genge.GengeAPIs.user.entity.OTP;
 import com.genge.GengeAPIs.user.entity.RefreshToken;
 import com.genge.GengeAPIs.user.entity.User;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -76,6 +80,9 @@ public class AuthService {
             otp.setOtp(otpCode);
             otp.setPhone(user.getPhone());
             otp.setUser(user);
+            otp.setExpiresAt(
+                    new Date(System.currentTimeMillis() + (5 * 60 * 1000))
+            );
             otp.setStatus(OTPStatus.PENDING);
 
             otpRepository.save(otp);
@@ -94,6 +101,7 @@ public class AuthService {
 
             response.setStatus(true);
             response.setMessage("OTP sent successfully");
+            response.setPhone(user.getPhone());
             response.setToken(accessToken);
             response.setRefreshToken(newToken.getToken());
             response.setExpired(String.valueOf(jwtService.getExpirationTime()));
@@ -112,5 +120,73 @@ public class AuthService {
         Random random = new Random();
         int otp = 100000 + random.nextInt(900000);
         return String.valueOf(otp);
+    }
+
+    @Transactional
+    public APIResponse<?> verifyOtp(OtpVerificationRequest request) {
+
+        APIResponse<Object> response = new APIResponse<>();
+
+        try {
+
+            if (request.getPhone() == null || request.getPhone().isBlank()) {
+                response.setStatus(false);
+                response.setMessage("Nama ya sim inahitajiaka.");
+                return response;
+            }
+
+            if (request.getOtp() == null || request.getOtp().isBlank()) {
+                response.setStatus(false);
+                response.setMessage("OTP inahitajika.");
+                return response;
+            }
+
+            OTP otp = otpRepository
+                    .findFirstByPhoneAndOtpAndStatusOrderByIdDesc(
+                            request.getPhone(),
+                            request.getOtp(),
+                            OTPStatus.PENDING
+                    )
+                    .orElse(null);
+
+            if (otp == null) {
+                response.setStatus(false);
+                response.setMessage("OTP sio sahihi");
+                return response;
+            }
+
+            if (otp.getExpiresAt() != null &&
+                    otp.getExpiresAt().before(new Date())) {
+
+                response.setStatus(false);
+                response.setMessage("OTP ime expire.");
+                return response;
+            }
+
+            otp.setStatus(OTPStatus.VERIFIED);
+            otpRepository.save(otp);
+
+            User user = otp.getUser();
+
+            UserResponse userResponse = new UserResponse(
+                    (long) user.getId(),
+                    user.getFullName(),
+                    user.getPhone()
+            );
+
+            response.setStatus(true);
+            response.setMessage("OTP Imethibitishwa kikamilifu.");
+            response.setData(userResponse);
+
+            return response;
+
+        } catch (Exception e) {
+            LOGGER.error("OTP Verification Error", e);
+
+            response.setStatus(false);
+            response.setMessage("Imeshindikana ku verifai OTP.");
+
+            return response;
+        }
     }
 }
