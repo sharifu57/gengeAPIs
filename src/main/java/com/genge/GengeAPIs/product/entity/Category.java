@@ -21,5 +21,5 @@ public class Category extends Auditable<String> implements Serializable {
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
-    private boolean status=true;
+    private boolean isActive=true;
 }
