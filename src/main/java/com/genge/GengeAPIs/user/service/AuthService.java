@@ -100,7 +100,7 @@ public class AuthService {
             );
 
             response.setStatus(true);
-            response.setMessage("OTP sent successfully");
+            response.setMessage("OTP sent successfully" + otpCode);
             response.setPhone(user.getPhone());
             response.setToken(accessToken);
             response.setRefreshToken(newToken.getToken());

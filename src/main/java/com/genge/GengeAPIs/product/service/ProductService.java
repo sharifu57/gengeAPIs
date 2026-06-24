@@ -167,4 +167,23 @@ public class ProductService {
                 product
         );
     }
+
+    public APIResponse<List<Product>> getProductsByCategory(String categoryId) {
+
+        Category category = categoryRepository
+                .findByRowId(categoryId)
+                .orElse(null);
+
+        if (category == null) {
+            return APIResponse.fail("Category not found");
+        }
+
+        List<Product> products = productRepository
+                .findByCategoryIdAndIsActiveTrue(Long.valueOf(category.getId()));
+
+        return APIResponse.success(
+                "Products retrieved successfully",
+                products
+        );
+    }
 }

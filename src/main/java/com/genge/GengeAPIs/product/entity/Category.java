@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,6 +21,8 @@ public class Category extends Auditable<String> implements Serializable {
 
     @Column(columnDefinition = "TEXT")
     private String imageUrl;
+
+    private String rowId= String.valueOf(UUID.randomUUID());
 
     private boolean isActive=true;
 }

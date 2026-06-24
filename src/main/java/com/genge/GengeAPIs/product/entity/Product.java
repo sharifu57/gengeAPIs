@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -36,4 +37,7 @@ public class Product extends Auditable<String> implements Serializable {
 
     private String sku;
     private Boolean isActive=true;
+
+    @Column(unique = true)
+    private String rowId= String.valueOf(UUID.randomUUID());;
 }
